@@ -2,7 +2,7 @@ from flask import Flask, request, jsonify
 
 app = Flask(__name__)
 
-# In-memory task list (for now)
+# In-memory task list
 tasks = []
 task_counter = 1
 
