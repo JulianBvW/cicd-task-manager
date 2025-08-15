@@ -1,7 +1,6 @@
-# Use a lightweight base image
-FROM python:3.11-slim
+# --- Stage 1: Build & Test ---
+FROM python:3.11-slim as test
 
-# Set working directory
 WORKDIR /app
 
 # Copy requirements first
@@ -11,7 +10,22 @@ COPY requirements-dev.txt requirements-dev.txt
 # Install dependencies
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Copy application code
+# Copy app code
+COPY src/ src/
+COPY tests/ tests/
+
+# Run lint and tests
+RUN flake8 src tests && pytest
+
+
+# --- Stage 2: Production Image ---
+FROM python:3.11-slim as prod
+
+WORKDIR /app
+
+COPY requirements.txt requirements.txt
+RUN pip install --no-cache-dir -r requirements.txt
+
 COPY src/ src/
 
 # Expose Flask port
